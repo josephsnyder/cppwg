@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 """
 Parse the single header file using CastXML and pygccxml
 """
@@ -20,11 +21,11 @@ class CppSourceParser():
         self.source_ns = None
 
     def parse(self):
-
-        xml_generator_config = parser.xml_generator_configuration_t(xml_generator_path=self.castxml_binary, 
+        xml_generator_config = parser.xml_generator_configuration_t(xml_generator_path=self.castxml_binary,
                                                                     xml_generator="castxml",
-                                                                    cflags="-std=c++11",
-                                                                    include_paths=self.source_includes)
+                                                                    cflags="-std=c++1z -ferror-limit=0",
+                                                                    include_paths=self.source_includes
+                                                                    )
 
         print ("INFO: Parsing Code")
         decls = parser.parse([self.wrapper_header_collection], xml_generator_config,
@@ -40,6 +41,8 @@ class CppSourceParser():
 
         # Identify decls in our source tree
         def check_loc(loc):
+            if not os.path.isabs(loc):
+                loc = os.path.abspath(loc)
             return (self.source_root in loc) or ("wrapper_header_collection" in loc)
         
         source_decls = [decl for decl in decls_loc_not_none if check_loc(decl.location.file_name)]

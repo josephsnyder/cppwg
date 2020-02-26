@@ -19,7 +19,7 @@ class PackageInfo(base_info.BaseInfo):
         self.source_locations = None
         self.module_info = []
         self.source_root = source_root
-        self.source_hpp_patterns = ["*.hpp"]
+        self.source_hpp_patterns = ["*.h", "*.hpp"]
         self.source_hpp_files = []
         self.common_include_file = False
         

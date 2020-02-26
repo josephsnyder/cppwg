@@ -66,7 +66,7 @@ class PackageInfoParser(object):
         # Parse package data
         package_defaults = {'name': 'cppwg_package',
                             'common_include_file': True,
-                            'source_hpp_patterns': ["*.hpp"]}
+                            'source_hpp_patterns': ["*.h","*.hpp"]}
         package_defaults.update(global_defaults)
         for eachEntry in package_defaults.keys():
             if eachEntry in self.raw_info:

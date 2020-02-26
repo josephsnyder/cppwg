@@ -21,7 +21,8 @@ class CppWrapperGenerator(object):
                  source_includes=None, 
                  wrapper_root=None,
                  castxml_binary='castxml',
-                 package_info_path='package_info.yaml'):
+                 package_info_path='package_info.yaml',
+                 header_sources=[]):
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -34,6 +35,7 @@ class CppWrapperGenerator(object):
         self.source_hpp_files = []
         self.global_ns = None
         self.source_ns = None
+        self.supplied_header_files = header_sources
 
         if self.wrapper_root is None:
             self.wrapper_root = self.source_root
@@ -55,13 +57,16 @@ class CppWrapperGenerator(object):
         Walk through the source root and add any files matching the provided patterns.
         Keep the wrapper root out of the search path to avoid pollution.
         """
-        for root, _, filenames in os.walk(self.source_root, followlinks=True):
-            for pattern in self.package_info.source_hpp_patterns:
-                for filename in fnmatch.filter(filenames, pattern):
-                    if "cppwg" not in filename:
-                        self.package_info.source_hpp_files.append(os.path.join(root, filename))
-        self.package_info.source_hpp_files = [path for path in self.package_info.source_hpp_files 
-                                         if self.wrapper_root not in path]
+        if not self.supplied_header_files:
+            for root, _, filenames in os.walk(self.source_root, followlinks=True):
+                for pattern in self.package_info.source_hpp_patterns:
+                    for filename in fnmatch.filter(filenames, pattern):
+                        if "cppwg" not in filename:
+                            self.package_info.source_hpp_files.append(os.path.join(root, filename))
+            self.package_info.source_hpp_files = [path for path in self.package_info.source_hpp_files
+                                             if self.wrapper_root not in path]
+        else:
+            self.package_info.source_hpp_files = self.supplied_header_files
 
     def generate_header_collection(self):
 
